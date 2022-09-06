@@ -79,10 +79,23 @@ async fn main() {
                 .expect("Failed to download file");
 
             match package.install.type_ {
-                PackageType::Executable => process::Command::new(out_file)
-                    .spawn()
-                    .expect("Failed to execute"),
-                PackageType::JellyFish => todo!(),
+                PackageType::Executable => {
+                    process::Command::new(out_file)
+                        .spawn()
+                        .expect("Failed to execute");
+                }
+                PackageType::JellyFish => {
+                    let installer = jellyfish_install::JellyFishInstaller::new(out_file);
+                    installer
+                        .install_to(
+                            proj_dirs.data_dir().join("packages").join(package.name),
+                            proj_dirs.data_dir().join("bin"),
+                            true,
+                        )
+                        .expect(
+                            "Failed to install package. This may be caused by a corrupted package or a lack of sufficient privileges",
+                        );
+                }
                 PackageType::Wharf => todo!(),
             };
         }

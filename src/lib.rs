@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 mod download;
 pub use download::*;
 pub mod git;
+pub mod jellyfish_install;
 
 #[derive(Deserialize, Serialize, Default)]
 pub struct Config {
