@@ -77,6 +77,7 @@ async fn main() {
             let out_file = voran::download(&package.install.url, cache_dir.to_path_buf())
                 .await
                 .expect("Failed to download file");
+            println!("Download complete!, Installing...");
 
             match package.install.type_ {
                 PackageType::Executable => {
@@ -98,6 +99,11 @@ async fn main() {
                 }
                 PackageType::Wharf => todo!(),
             };
+
+            println!(
+                "Successfully installed {} v{}",
+                package.friendly_name, package.version
+            );
         }
     }
 }

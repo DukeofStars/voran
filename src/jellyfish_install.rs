@@ -57,6 +57,10 @@ impl JellyFishInstaller {
             {
                 let file = bin_file?;
 
+                let link = bin_path.join(file.file_name());
+                if link.exists() {
+                    fs::remove_file(link).unwrap();
+                }
                 #[cfg(windows)]
                 {
                     if file.path().is_dir() {
