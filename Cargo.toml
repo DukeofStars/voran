@@ -17,3 +17,4 @@ failure = "0.1.8"
 exitfailure = "0.5.1"
 tar = "0.4.38"
 flate2 = "1.0.24"
+git-rs = { path = "../git-rs" }

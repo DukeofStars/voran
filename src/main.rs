@@ -16,7 +16,7 @@ async fn main() {
             let proj_dirs = proj_dirs();
 
             let local_repo_path = proj_dirs.data_local_dir();
-            let mut repository = git::GitRepository::new(PathBuf::from(local_repo_path));
+            let mut repository = git_rs::GitRepository::new(PathBuf::from(local_repo_path));
 
             let remotes = repository.remotes();
             let pb = ProgressBar::new(remotes.len() as u64 - 1);
