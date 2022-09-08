@@ -39,7 +39,7 @@ impl JellyFishInstaller {
         if link {
             let bin = out.join("bin");
             if !bin.exists() {
-                // Package doesn't need to have any binaries
+                // Package doesn't have any binaries
                 return Ok(());
             }
 
