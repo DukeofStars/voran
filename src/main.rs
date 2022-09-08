@@ -1,10 +1,12 @@
+use clap::{Args, Parser, Subcommand};
+use indicatif::{ProgressBar, ProgressStyle};
 use std::{fs, path::PathBuf, process};
 
-use clap::{Args, Parser, Subcommand};
-
-use indicatif::{ProgressBar, ProgressStyle};
-
-use voran::*;
+use voran::{
+    package::{PackageType},
+    packages::{GetPackage, Packages},
+    *,
+};
 
 #[tokio::main]
 async fn main() {
@@ -48,25 +50,14 @@ async fn main() {
         }
         Command::Install(args) => {
             // Make sure the package exists
-            let path = proj_dirs().data_local_dir().join(args.package);
-            if path.is_file() || !path.exists() {
-                panic!("This package does not exist")
-            }
-
-            // Make sure the version exists
-            let version = args.version.unwrap_or("LATEST".to_string());
-            let version_path = path.join(version);
-            if version_path.is_file() || !version_path.exists() {
-                panic!("This version does not exist for this package");
-            }
-
-            // Load header
-            let package_file = version_path.join("package.toml");
-            if !package_file.exists() || !package_file.is_file() {
-                panic!("Invalid package version");
-            }
-            let package: Package =
-                toml::from_str(fs::read_to_string(package_file).unwrap().as_str()).unwrap();
+            let package = packages::get_packages()
+                .lazy()
+                .get_package(&args.package)
+                .expect("This package does not exist")
+                .version(&args.version.unwrap_or("LATEST".to_string()))
+                .expect("This version does not exist")
+                .package()
+                .unwrap();
 
             // Download the file
             let proj_dirs = proj_dirs();
@@ -106,26 +97,6 @@ async fn main() {
             );
         }
     }
-}
-
-fn load_local_config() -> Config {
-    let proj_dirs = proj_dirs();
-    let file = proj_dirs.config_dir().join("config.toml");
-
-    if !file.exists() {
-        println!("Error: configuration does not exist");
-        println!("file: {file:?}");
-        fs::create_dir_all(file.parent().unwrap()).unwrap();
-        fs::write(&file, toml::to_string_pretty(&Config::default()).unwrap()).unwrap();
-    }
-
-    let config: Config = toml::from_str(
-        fs::read_to_string(file)
-            .expect("Config file does not exist")
-            .as_str(),
-    )
-    .unwrap();
-    config
 }
 
 #[derive(Parser)]
