@@ -77,13 +77,24 @@ async fn main() {
                     let installer = jellyfish_install::JellyFishInstaller::new(out_file);
                     installer
                         .install_to(
-                            proj_dirs.data_dir().join("packages").join(package.name),
+                            proj_dirs.data_dir().join("packages").join(&package.name),
                             proj_dirs.data_dir().join("bin"),
                             true,
                         )
                         .expect(
                             "Failed to install package. This may be caused by a corrupted package or a lack of sufficient privileges",
                         );
+
+                    // Store package information with package for later use.
+                    fs::write(
+                        proj_dirs
+                            .data_dir()
+                            .join("packages")
+                            .join(&package.name)
+                            .join("package.toml"),
+                        toml::to_string(&package).unwrap(),
+                    )
+                    .expect("Failed to store package information");
                 }
                 PackageType::Wharf => todo!(),
             };
