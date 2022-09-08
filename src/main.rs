@@ -104,6 +104,20 @@ async fn main() {
                 package.friendly_name, package.version
             );
         }
+        Command::Uninstall(args) => {
+            let package = packages::installed_packages()
+                .lazy()
+                .get_package(&args.package)
+                .expect("This package does not exist")
+                .package()
+                .expect("Failed to get package.toml for this package");
+
+            match package.install.type_ {
+                PackageType::Executable => todo!(),
+                PackageType::JellyFish => todo!(),
+                PackageType::Wharf => todo!(),
+            }
+        }
     }
 }
 
@@ -119,6 +133,8 @@ enum Command {
     Update,
     /// Install a package
     Install(InstallArgs),
+    /// Uninstall a package
+    Uninstall(UninstallArgs),
 }
 
 #[derive(Args)]
@@ -128,4 +144,10 @@ struct InstallArgs {
     /// Optional version of the package
     #[clap(short, long)]
     version: Option<String>,
+}
+
+#[derive(Args)]
+struct UninstallArgs {
+    /// Name of the package to be uninstalled.
+    package: String,
 }

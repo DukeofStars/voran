@@ -10,6 +10,12 @@ pub fn get_packages() -> GetPackages {
     }
 }
 
+pub fn installed_packages() -> GetPackages {
+    GetPackages {
+        dir: proj_dirs().data_dir().to_path_buf().join("packages"),
+    }
+}
+
 pub struct GetPackages {
     dir: PathBuf,
 }
