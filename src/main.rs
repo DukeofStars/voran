@@ -1,9 +1,9 @@
 use clap::{Args, Parser, Subcommand};
 use indicatif::{ProgressBar, ProgressStyle};
-use std::{fs, path::PathBuf, process};
+use std::{fs, process};
 
 use voran::{
-    package::{PackageType},
+    package::PackageType,
     packages::{GetPackage, Packages},
     *,
 };
@@ -15,10 +15,7 @@ async fn main() {
 
     match cli.subcommand {
         Command::Update => {
-            let proj_dirs = proj_dirs();
-
-            let local_repo_path = proj_dirs.data_local_dir();
-            let mut repository = git_rs::GitRepository::new(PathBuf::from(local_repo_path));
+            let mut repository = packages::get_packages().git();
 
             let remotes = repository.remotes();
             let pb = ProgressBar::new(remotes.len() as u64 - 1);
