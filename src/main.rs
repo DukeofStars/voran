@@ -73,7 +73,7 @@ async fn main() {
                         .spawn()
                         .expect("Failed to execute");
                 }
-                PackageType::JellyFish => {
+                PackageType::JellyFish | PackageType::Wharf => {
                     let installer = jellyfish_install::JellyFishInstaller::new(out_file);
                     installer
                         .install_to(
@@ -95,8 +95,17 @@ async fn main() {
                         toml::to_string(&package).unwrap(),
                     )
                     .expect("Failed to store package information");
+
+                    if let PackageType::Wharf = package.install.type_ {
+                        wharf::run(
+                            proj_dirs
+                                .data_dir()
+                                .join("packages")
+                                .join(&package.name)
+                                .join("build.rope"),
+                        );
+                    }
                 }
-                PackageType::Wharf => todo!(),
             };
 
             println!(
@@ -116,15 +125,26 @@ async fn main() {
                 PackageType::Executable => {
                     println!("Fatal: This package cannot be uninstalled.")
                 }
-                PackageType::JellyFish => fs::remove_dir_all(
-                    packages::installed_packages()
-                        .lazy()
-                        .get_package(&args.package)
-                        .unwrap()
-                        .dir,
-                )
-                .expect("Failed to remove files"),
-                PackageType::Wharf => todo!(),
+                PackageType::JellyFish | PackageType::Wharf => {
+                    fs::remove_dir_all(
+                        packages::installed_packages()
+                            .lazy()
+                            .get_package(&args.package)
+                            .unwrap()
+                            .dir,
+                    )
+                    .expect("Failed to remove files");
+
+                    if let PackageType::Wharf = package.install.type_ {
+                        wharf::run(
+                            proj_dirs()
+                                .data_dir()
+                                .join("packages")
+                                .join(&package.name)
+                                .join("build.rope"),
+                        );
+                    }
+                }
             }
 
             println!("Uninstallation successful");
