@@ -113,10 +113,21 @@ async fn main() {
                 .expect("Failed to get package.toml for this package");
 
             match package.install.type_ {
-                PackageType::Executable => todo!(),
-                PackageType::JellyFish => todo!(),
+                PackageType::Executable => {
+                    println!("Fatal: This package cannot be uninstalled.")
+                }
+                PackageType::JellyFish => fs::remove_dir_all(
+                    packages::installed_packages()
+                        .lazy()
+                        .get_package(&args.package)
+                        .unwrap()
+                        .dir,
+                )
+                .expect("Failed to remove files"),
                 PackageType::Wharf => todo!(),
             }
+
+            println!("Uninstallation successful");
         }
     }
 }

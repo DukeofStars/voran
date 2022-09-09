@@ -39,7 +39,7 @@ pub trait Packages<GP: GetPackage> {
 }
 
 pub struct LazyPackages {
-    dir: PathBuf,
+    pub dir: PathBuf,
 }
 
 impl Packages<LazyGetPackage> for LazyPackages {
@@ -68,7 +68,7 @@ pub trait GetPackage {
 }
 
 pub struct LazyGetPackage {
-    dir: PathBuf,
+    pub dir: PathBuf,
 }
 
 impl GetPackage for LazyGetPackage {
