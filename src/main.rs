@@ -18,7 +18,7 @@ async fn main() {
             let mut repository = packages::get_packages().git();
 
             let remotes = repository.remotes();
-            let pb = ProgressBar::new(remotes.len() as u64 - 1);
+            let pb = ProgressBar::new(remotes.len().saturating_sub(1) as u64);
             pb.set_style(
                 ProgressStyle::default_bar()
                     .template("[{bar:40.cyan/blue}]")
@@ -30,7 +30,7 @@ async fn main() {
                 pb.set_position(index as u64);
             }
 
-            let pb = ProgressBar::new((config.git_repo_urls.len() - 1) as u64);
+            let pb = ProgressBar::new(config.git_repo_urls.len().saturating_sub(1) as u64);
             pb.set_style(
                 ProgressStyle::default_bar()
                     .template("[{bar:40.cyan/blue}]")

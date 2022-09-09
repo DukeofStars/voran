@@ -18,6 +18,7 @@ pub fn load_local_config() -> Config {
         println!("file: {file:?}");
         fs::create_dir_all(file.parent().unwrap()).unwrap();
         fs::write(&file, toml::to_string_pretty(&Config::default()).unwrap()).unwrap();
+        std::process::exit(1);
     }
 
     let config: Config = toml::from_str(
