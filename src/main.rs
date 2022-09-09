@@ -136,7 +136,7 @@ async fn main() {
                     .expect("Failed to remove files");
 
                     if let PackageType::Wharf = package.install.type_ {
-                        wharf::run(
+                        wharf::reverse(
                             proj_dirs()
                                 .data_dir()
                                 .join("packages")
