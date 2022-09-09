@@ -125,6 +125,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "colored"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3616f750b84d8f0de8a58bda93e08e2a81ad3f523089b05f1dffecab48c6cbd"
+dependencies = [
+ "atty",
+ "lazy_static",
+ "winapi",
+]
+
+[[package]]
+name = "compression"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a82b366ae14633c67a1cbb4aa3738210a23f77d2868a0fd50faa23a956f9ec4"
+dependencies = [
+ "cfg-if",
+ "lazy_static",
+ "log",
+ "num-traits",
+]
+
+[[package]]
 name = "console"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -600,6 +623,15 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "tempfile",
+]
+
+[[package]]
+name = "num-traits"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "578ede34cf02f8924ab9447f50c28075b4d3e5b269972345e7e0372b38c6cdcd"
+dependencies = [
+ "autocfg",
 ]
 
 [[package]]
@@ -1205,6 +1237,7 @@ dependencies = [
  "tar",
  "tokio",
  "toml",
+ "wharf",
 ]
 
 [[package]]
@@ -1297,6 +1330,17 @@ checksum = "ed055ab27f941423197eb86b2035720b1a3ce40504df082cac2ecc6ed73335a1"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "wharf"
+version = "0.3.0"
+source = "git+https://github.com/seasproject/wharf#c9cf3095bfeb2f0ecee030dc80be82d31da76d08"
+dependencies = [
+ "clap",
+ "colored",
+ "compression",
+ "tar",
 ]
 
 [[package]]
