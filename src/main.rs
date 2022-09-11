@@ -187,35 +187,63 @@ async fn main() {
         }
         Command::List(args) => {
             // List local packages
-            let mut out = vec![];
             if args.local {
                 let packages = voran::packages::installed_packages()
                     .load()
                     .await
                     .expect("Failed to load packages");
-                out = packages.collect();
-            }
-
-            println!("|{:30}|{:30}|{:10}|", "Name", "Id", "Version");
-            println!(
-                "|{:30}|{:30}|{:10}|",
-                "-".repeat(30),
-                "-".repeat(30),
-                "-".repeat(10)
-            );
-            for package in out {
-                let package = package.package().unwrap();
+                println!("|{:30}|{:30}|{:10}|", "Name", "Id", "Version");
                 println!(
                     "|{:30}|{:30}|{:10}|",
-                    package.friendly_name, package.name, package.version
+                    "-".repeat(30),
+                    "-".repeat(30),
+                    "-".repeat(10)
+                );
+                for package in packages {
+                    let package = package.package().unwrap();
+                    println!(
+                        "|{:30}|{:30}|{:10}|",
+                        package.friendly_name, package.name, package.version
+                    );
+                }
+                println!(
+                    "|{:30}|{:30}|{:10}|",
+                    "-".repeat(30),
+                    "-".repeat(30),
+                    "-".repeat(10)
                 );
             }
-            println!(
-                "|{:30}|{:30}|{:10}|",
-                "-".repeat(30),
-                "-".repeat(30),
-                "-".repeat(10)
-            );
+            // List remote packages
+            else if args.remote || (!args.local && !args.remote) {
+                let packages = voran::packages::get_packages()
+                    .load()
+                    .await
+                    .expect("Failed to load packages");
+                println!("|{:30}|{:30}|{:10}|", "Name", "Id", "Version");
+                println!(
+                    "|{:30}|{:30}|{:10}|",
+                    "-".repeat(30),
+                    "-".repeat(30),
+                    "-".repeat(10)
+                );
+                for mut package in packages {
+                    let package = package
+                        .version("LATEST")
+                        .expect("Failed to load package")
+                        .package()
+                        .unwrap();
+                    println!(
+                        "|{:30}|{:30}|{:10}|",
+                        package.friendly_name, package.name, package.version
+                    );
+                }
+                println!(
+                    "|{:30}|{:30}|{:10}|",
+                    "-".repeat(30),
+                    "-".repeat(30),
+                    "-".repeat(10)
+                );
+            }
         }
     }
 }
@@ -241,7 +269,7 @@ enum Command {
 #[derive(Args)]
 struct ListArgs {
     #[clap(short, long)]
-    from: Option<String>,
+    remote: bool,
     #[clap(short, long)]
     local: bool,
 }
