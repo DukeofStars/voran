@@ -9,7 +9,7 @@ Voran is an installer project designed to work seamlessly with JellyFish package
  - [x] Support for Executable installers
  - [x] Multiple repositories
  - [x] Install specific version of application
- 
+
 **Warning:** Voran is still in a demo stage, none of it is expected to be production ready, and many things are planned to change.
 
 ## Getting Started
@@ -25,20 +25,30 @@ Otherwise download the latest binaries from https://github.com/DukeofStars/voran
 
 ### Managing Packages
 To install
+
 `voran install <package>`
+
 To uninstall
+
 `voran uninstall <package>`
+
 To list packages
+
 `voran list [--local|--remote]`
 
 ### Managing remotes
 Remotes are Git Repositories.
 
 To add a remote
+
 `voran remote add <alias> <git_repo_url>`
+
 To remove a remote
+
 `voran remote remove <alias>`
+
 To list remotes
+
 `voran remote list`
 
 ## Contributing
