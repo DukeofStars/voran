@@ -52,15 +52,20 @@ impl Packages for LazyPackages {
     }
 }
 
-// TODO
 pub struct LoadPackages {
     packages: Vec<PathBuf>,
     index: usize,
 }
 
 impl Packages for LoadPackages {
-    fn get_package(self, _name: &str) -> Option<GetPackage> {
-        todo!()
+    fn get_package(self, name: &str) -> Option<GetPackage> {
+        let path = self
+            .packages
+            .iter()
+            .find(|x| x.file_name().unwrap_or_default().to_str().unwrap() == name && x.is_dir())?;
+        Some(GetPackage {
+            dir: path.to_path_buf(),
+        })
     }
 }
 
