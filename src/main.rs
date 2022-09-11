@@ -4,11 +4,7 @@ use reqwest::Client;
 use std::{fs, process, sync::Arc, thread, time::Duration};
 use tokio::sync::Mutex;
 
-use voran::{
-    package::PackageType,
-    packages::{GetPackage, Packages},
-    *,
-};
+use voran::{package::PackageType, packages::Packages, *};
 
 #[tokio::main]
 async fn main() {
@@ -17,7 +13,7 @@ async fn main() {
 
     match cli.subcommand {
         Command::Update => {
-            let mut repository = packages::get_packages().git();
+            let mut repository = packages::get_packages().git().await.unwrap();
 
             let remotes = repository.remotes();
             let remotes_len = remotes.len();
@@ -79,6 +75,8 @@ async fn main() {
             // Make sure the package exists
             let package = packages::get_packages()
                 .lazy()
+                .await
+                .unwrap()
                 .get_package(&args.package)
                 .expect("This package does not exist")
                 .version(&args.version.unwrap_or("LATEST".to_string()))
@@ -150,6 +148,8 @@ async fn main() {
         Command::Uninstall(args) => {
             let package = packages::installed_packages()
                 .lazy()
+                .await
+                .unwrap()
                 .get_package(&args.package)
                 .expect("This package does not exist")
                 .package()
@@ -163,6 +163,8 @@ async fn main() {
                     fs::remove_dir_all(
                         packages::installed_packages()
                             .lazy()
+                            .await
+                            .unwrap()
                             .get_package(&args.package)
                             .unwrap()
                             .dir,
@@ -183,6 +185,38 @@ async fn main() {
 
             println!("Uninstallation successful");
         }
+        Command::List(args) => {
+            // List local packages
+            let mut out = vec![];
+            if args.local {
+                let packages = voran::packages::installed_packages()
+                    .load()
+                    .await
+                    .expect("Failed to load packages");
+                out = packages.collect();
+            }
+
+            println!("|{:30}|{:30}|{:10}|", "Name", "Id", "Version");
+            println!(
+                "|{:30}|{:30}|{:10}|",
+                "-".repeat(30),
+                "-".repeat(30),
+                "-".repeat(10)
+            );
+            for package in out {
+                let package = package.package().unwrap();
+                println!(
+                    "|{:30}|{:30}|{:10}|",
+                    package.friendly_name, package.name, package.version
+                );
+            }
+            println!(
+                "|{:30}|{:30}|{:10}|",
+                "-".repeat(30),
+                "-".repeat(30),
+                "-".repeat(10)
+            );
+        }
     }
 }
 
@@ -200,6 +234,16 @@ enum Command {
     Install(InstallArgs),
     /// Uninstall a package
     Uninstall(UninstallArgs),
+    /// List all packages from a remote
+    List(ListArgs),
+}
+
+#[derive(Args)]
+struct ListArgs {
+    #[clap(short, long)]
+    from: Option<String>,
+    #[clap(short, long)]
+    local: bool,
 }
 
 #[derive(Args)]
