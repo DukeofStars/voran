@@ -30,6 +30,15 @@ pub fn load_local_config() -> Config {
     config
 }
 
+pub fn save_config(config: &Config) -> Result<(), failure::Error> {
+    let proj_dirs = proj_dirs();
+    let file = proj_dirs.config_dir().join("config.toml");
+
+    fs::write(&file, toml::to_string(config)?)?;
+
+    Ok(())
+}
+
 #[derive(Deserialize, Serialize, Default)]
 pub struct Config {
     pub git_repo_urls: Vec<(String, String)>,
