@@ -9,6 +9,7 @@ Voran is an installer project designed to work seamlessly with JellyFish package
  - [x] Support for Executable installers
  - [x] Multiple repositories
  - [x] Install specific version of application
+ 
 **Warning:** Voran is still in a demo stage, none of it is expected to be production ready, and many things are planned to change.
 
 ## Getting Started
