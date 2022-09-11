@@ -9,6 +9,13 @@ use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
+/// Download file using a reqwest::Client, from url and put the contents at path.
+///
+/// ```rust
+/// let file = "google_index.html";
+/// let url = "https://google.com/index.html";
+/// download_file(&Client::new(), url, path).expect("Failed to download file");
+/// ```
 pub async fn download_file<P: AsRef<Path>>(
     client: &Client,
     url: &str,
@@ -63,97 +70,3 @@ pub async fn download_file<P: AsRef<Path>>(
 
     Ok(path.as_ref().to_path_buf())
 }
-
-// struct DownloadProgress<'a, R: std::io::Read> {
-//     inner: R,
-//     progress_bar: &'a ProgressBar,
-// }
-
-// impl<'a, R: std::io::Read> Read for DownloadProgress<'a, R> {
-//     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-//         self.inner.read(buf).map(|n| {
-//             self.progress_bar.inc(n as u64);
-//             n
-//         })
-//     }
-// }
-
-// pub async fn download(
-//     url: &str,
-//     folder: PathBuf,
-//     pb: &ProgressBar,
-// ) -> Result<PathBuf, ExitFailure> {
-//     let url = Url::parse(url)?;
-//     let client = Client::new();
-
-//     let total_size = {
-//         let resp = client.head(url.as_str()).send().await?;
-//         if resp.status().is_success() {
-//             resp.headers()
-//                 .get(header::CONTENT_LENGTH)
-//                 .and_then(|ct_len| ct_len.to_str().ok())
-//                 .and_then(|ct_len| ct_len.parse().ok())
-//                 .unwrap_or(0)
-//         } else {
-//             return Err(failure::err_msg(format!(
-//                 "Couldn't download URL: {}. Error: {:?}",
-//                 url,
-//                 resp.status(),
-//             ))
-//             .into());
-//         }
-//     };
-
-//     let mut request = client.get(url.as_str());
-//     pb.set_length(total_size);
-//     pb.set_style(
-//         ProgressStyle::default_bar()
-//             .template(
-//                 "{spinner} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})",
-//             )?
-//             .progress_chars("#>-"),
-//     );
-
-//     let file = folder.join(Path::new(
-//         url.path_segments()
-//             .and_then(|segments| segments.last())
-//             .unwrap_or("tmp.bin"),
-//     ));
-
-//     if file.exists() {
-//         let size = file.metadata()?.len() - 1;
-//         request = request.header(header::RANGE, format!("bytes={}-", size));
-//         pb.inc(size);
-//     }
-
-//     // let bytes = request.send().await?.bytes().await?;
-//     // let mut source = DownloadProgress {
-//     //     progress_bar: pb,
-//     //     inner: bytes.as_ref(),
-//     // };
-
-//     let mut res = reqwest::get(url).await?;
-
-//     let mut index: u64 = 0;
-
-//     while let Some(chunk) = res.chunk().await? {
-//         index += chunk.len() as u64;
-//         pb.set_position(index);
-//     }
-
-//     // let mut source = DownloadProgress {
-//     //     progress_bar: pb,
-//     //     inner: res.chunk().await?.unwrap(),
-//     // }
-
-//     pb.finish();
-
-//     let mut dest = fs::OpenOptions::new()
-//         .create(true)
-//         .append(true)
-//         .open(&file)?;
-
-//     // let _ = copy(&mut source, &mut dest)?;
-
-//     Ok(file)
-// }

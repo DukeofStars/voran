@@ -9,6 +9,7 @@ pub mod jellyfish_install;
 pub mod package;
 pub mod packages;
 
+/// Load config saved on local disk.
 pub fn load_local_config() -> Config {
     let proj_dirs = proj_dirs();
     let file = proj_dirs.config_dir().join("config.toml");
@@ -30,6 +31,7 @@ pub fn load_local_config() -> Config {
     config
 }
 
+/// Save config to local disk
 pub fn save_config(config: &Config) -> Result<(), failure::Error> {
     let proj_dirs = proj_dirs();
     let file = proj_dirs.config_dir().join("config.toml");
@@ -39,11 +41,13 @@ pub fn save_config(config: &Config) -> Result<(), failure::Error> {
     Ok(())
 }
 
+/// Serialize and Deserializeable Configuration struct.
 #[derive(Deserialize, Serialize, Default)]
 pub struct Config {
     pub git_repo_urls: Vec<(String, String)>,
 }
 
+/// Get directories::ProjectDirs of this application.
 pub fn proj_dirs() -> ProjectDirs {
     ProjectDirs::from("", "", "Voran").unwrap()
 }

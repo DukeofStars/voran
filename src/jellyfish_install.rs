@@ -7,15 +7,18 @@ use std::{
 use flate2::read::GzDecoder;
 use tar::Archive;
 
+/// Used to install JellyFish packages.
 pub struct JellyFishInstaller {
     input_file: PathBuf,
 }
 
 impl JellyFishInstaller {
+    /// Create a new JellyFishInstaller.
     pub fn new(input: PathBuf) -> Self {
         Self { input_file: input }
     }
 
+    /// Extract files from package then link files in /bin to specified bin_path, if link is set to true.
     pub fn install_to(
         &self,
         out: PathBuf,

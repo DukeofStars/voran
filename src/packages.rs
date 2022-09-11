@@ -4,45 +4,55 @@ use git_rs::GitRepository;
 
 use crate::{package::Package, proj_dirs};
 
+/// Create a GetPackages at the package repository root.
 pub fn get_packages() -> GetPackages {
     GetPackages {
         dir: proj_dirs().data_local_dir().to_path_buf(),
     }
 }
 
+/// Create a GetPackages at the package binaries root.
 pub fn installed_packages() -> GetPackages {
     GetPackages {
         dir: proj_dirs().data_dir().to_path_buf().join("packages"),
     }
 }
 
+/// Helper class to get packages from repository.
 pub struct GetPackages {
     dir: PathBuf,
 }
 
 impl GetPackages {
+    /// Return the target repository as a GitRepository.
     pub async fn git(self) -> Result<GitRepository, failure::Error> {
         Ok(GitRepository::new(self.dir))
     }
 
+    /// Lazy load the packages (on command).
     pub async fn lazy(self) -> Result<LazyPackages, failure::Error> {
         Ok(LazyPackages { dir: self.dir })
     }
 
+    /// Asynchronously load the packages immediately.
     pub async fn load(self) -> Result<LoadPackages, failure::Error> {
         LoadPackages::begin(self.dir).await
     }
 }
 
+/// A trait for something that can return packages (eg. LazyPackages, LoadPackages).
 pub trait Packages {
+    /// Get the desired package.
     fn get_package(self, name: &str) -> Option<GetPackage>;
 }
 
+/// A Packages implementation that lazy loads the packages (ie. on command).
 pub struct LazyPackages {
     pub dir: PathBuf,
 }
 
 impl Packages for LazyPackages {
+    /// Get the desired package.
     fn get_package(self, name: &str) -> Option<GetPackage> {
         let path = self.dir.join(name);
         if !path.exists() {
@@ -58,6 +68,7 @@ pub struct LoadPackages {
 }
 
 impl Packages for LoadPackages {
+    /// Get the desired package.
     fn get_package(self, name: &str) -> Option<GetPackage> {
         let path = self
             .packages
@@ -70,7 +81,7 @@ impl Packages for LoadPackages {
 }
 
 impl LoadPackages {
-    // Start loading packages
+    /// Start loading packages
     async fn begin(dir: PathBuf) -> Result<LoadPackages, failure::Error> {
         let mut packages: Vec<PathBuf> = vec![];
         for entry in dir.read_dir()? {
@@ -101,11 +112,13 @@ impl Iterator for LoadPackages {
     }
 }
 
+/// Helper class to get package information from folder
 pub struct GetPackage {
     pub dir: PathBuf,
 }
 
 impl GetPackage {
+    /// Navigate into the folder of a specific version
     pub fn version(&mut self, version: &str) -> Option<&mut Self> {
         let path = self.dir.join(version);
         if !path.exists() {
@@ -115,6 +128,7 @@ impl GetPackage {
         Some(self)
     }
 
+    /// Load package.toml
     pub fn package(&self) -> Option<Package> {
         let path = self.dir.join("package.toml");
         if !path.exists() {
