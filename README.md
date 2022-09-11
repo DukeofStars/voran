@@ -16,11 +16,11 @@ Voran is an installer project designed to work seamlessly with JellyFish package
 ### Installing
 If you have Cargo installed
 ```
-git clone https://github.com/DukeofStars/Voran.git
+git clone https://github.com/DukeofStars/voran.git
 cd Voran
 cargo install --path .
 ```
-Otherwise download the latest binaries from https://github.com/DukeofStars/releases/
+Otherwise download the latest binaries from https://github.com/DukeofStars/voran/releases/
 
 ### Managing Packages
 To install
