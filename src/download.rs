@@ -11,10 +11,10 @@ use reqwest::Client;
 
 /// Download file using a reqwest::Client, from url and put the contents at path.
 ///
-/// ```rust
-/// let file = "google_index.html";
+/// ```rust_async
+/// let path = "google_index.html";
 /// let url = "https://google.com/index.html";
-/// download_file(&Client::new(), url, path).expect("Failed to download file");
+/// voran::download_file(&reqwest::Client::new(), url, path).expect("Failed to download file");
 /// ```
 pub async fn download_file<P: AsRef<Path>>(
     client: &Client,
@@ -38,9 +38,8 @@ pub async fn download_file<P: AsRef<Path>>(
     // Indicatif setup
     let pb = ProgressBar::new(total_size);
     pb.set_style(ProgressStyle::default_bar()
-        .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
+        .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
         .progress_chars("#>-"));
-    pb.set_message(format!("Downloading {}", url));
 
     // download chunks
     let mut file = File::create(&path).or(Err(failure::err_msg(format!(
@@ -62,11 +61,37 @@ pub async fn download_file<P: AsRef<Path>>(
         pb.set_position(new);
     }
 
-    pb.finish_with_message(format!(
-        "Downloaded {} to {}",
-        url,
-        path.as_ref().to_str().unwrap()
-    ));
+    pb.finish();
 
     Ok(path.as_ref().to_path_buf())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use reqwest::Client;
+    use tokio::fs::{self, OpenOptions};
+
+    use crate::download_file;
+
+    #[tokio::test]
+    async fn download_full_file() {
+        let url = "https://www.dundeecity.gov.uk/sites/default/files/publications/civic_renewal_forms.zip";
+        let path = "testing/test.txt";
+        if !PathBuf::from(&path).parent().unwrap().exists() {
+            fs::create_dir_all(PathBuf::from(&path).parent().unwrap())
+                .await
+                .unwrap();
+        }
+        download_file(&Client::new(), url, &path).await.unwrap();
+        let mut options = OpenOptions::default();
+        options.read(true);
+        let file = options.open(&path).await.unwrap();
+        let len = file.metadata().await.unwrap().len();
+        assert_eq!(1092867, len);
+        fs::remove_dir_all(PathBuf::from(path).parent().unwrap())
+            .await
+            .unwrap();
+    }
 }

@@ -21,3 +21,8 @@ git-rs = { path = "../git-rs" }
 wharf = { git = "https://github.com/seasproject/wharf" }
 tokio-scoped = "0.2.0"
 futures-util = "0.3.24"
+tempfile = "3.3.0"
+
+#[dev-dependencies]
+mockall = { version = "0.11.2", features = ["nightly"] }
+mockall_double = "0.3.0"

@@ -1,4 +1,7 @@
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 use git_rs::GitRepository;
 
@@ -38,12 +41,18 @@ impl GetPackages {
     pub async fn load(self) -> Result<LoadPackages, failure::Error> {
         LoadPackages::begin(self.dir).await
     }
+
+    pub fn new(dir: impl AsRef<Path>) -> Self {
+        Self {
+            dir: dir.as_ref().to_path_buf(),
+        }
+    }
 }
 
 /// A trait for something that can return packages (eg. LazyPackages, LoadPackages).
 pub trait Packages {
     /// Get the desired package.
-    fn get_package(self, name: &str) -> Option<GetPackage>;
+    fn get_package(&self, name: &str) -> Option<GetPackage>;
 }
 
 /// A Packages implementation that lazy loads the packages (ie. on command).
@@ -53,7 +62,7 @@ pub struct LazyPackages {
 
 impl Packages for LazyPackages {
     /// Get the desired package.
-    fn get_package(self, name: &str) -> Option<GetPackage> {
+    fn get_package(&self, name: &str) -> Option<GetPackage> {
         let path = self.dir.join(name);
         if !path.exists() {
             return None;
@@ -69,7 +78,7 @@ pub struct LoadPackages {
 
 impl Packages for LoadPackages {
     /// Get the desired package.
-    fn get_package(self, name: &str) -> Option<GetPackage> {
+    fn get_package(&self, name: &str) -> Option<GetPackage> {
         let path = self
             .packages
             .iter()

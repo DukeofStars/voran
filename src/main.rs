@@ -106,9 +106,8 @@ async fn main() {
                         .expect("Failed to execute");
                 }
                 PackageType::JellyFish | PackageType::Wharf => {
-                    let installer = jellyfish_install::JellyFishInstaller::new(out_file);
-                    installer
-                        .install_to(
+                    let installer = jellyfish_install::BasicJellyFishInstaller::new(out_file);
+                    jellyfish_install::install_to(&installer,
                             proj_dirs.data_dir().join("packages").join(&package.name),
                             proj_dirs.data_dir().join("bin"),
                             true,

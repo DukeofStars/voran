@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Package information
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct Package {
     pub name: String,
     pub friendly_name: String,
@@ -10,14 +10,14 @@ pub struct Package {
 }
 
 /// Package install information
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct InstallInfo {
     pub url: String,
     pub type_: PackageType,
 }
 
 /// Package install type
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub enum PackageType {
     Executable,
     JellyFish,
