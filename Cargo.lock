@@ -1421,6 +1421,7 @@ dependencies = [
  "mockall_double",
  "reqwest",
  "serde",
+ "serde_json",
  "tar",
  "tempfile",
  "tokio",

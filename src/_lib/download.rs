@@ -76,6 +76,7 @@ mod tests {
     use crate::download_file;
 
     #[tokio::test]
+    #[ignore]
     async fn download_full_file() {
         let url = "https://www.dundeecity.gov.uk/sites/default/files/publications/civic_renewal_forms.zip";
         let path = "testing/test.txt";

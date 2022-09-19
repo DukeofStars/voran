@@ -3,11 +3,8 @@ use std::fs;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-mod download;
-pub use download::*;
-pub mod jellyfish_install;
-pub mod package;
-pub mod packages;
+mod _lib;
+pub use _lib::*;
 
 /// Load config saved on local disk.
 pub fn load_local_config() -> Config {
